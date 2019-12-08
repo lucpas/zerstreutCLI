@@ -15,29 +15,29 @@ function checkCmd(){
 while IFS= read -r line
 do
 # check if start of cmdLine is valid.
-if [[ $line =~ ^[a-z].* ]]
-then
-  # get first word of line
-  cmd=$(echo "$line" | awk '{print $1}')
-  # check if first word of line (≈command) is valid
-  checkCmd $cmd
-  if [[ $? -eq 0 ]]
+  if [[ $line =~ ^[a-z].* ]]
   then
-  #   # save valid command to array
-  #   IFS=' ' read -r -a array <<< "$line"
-  #   # print array
-  #   for i in "${array[*]}"
-  #   do
-  #     echo $i
-  #   done
-  # printf "\n"
-    # save valid command to associative array.
-    assArray[$lineCount]="$line"
-    # echo $lineCount
-    # printf '%s\n' "${assArray[$lineCount]}"
-    ((lineCount=lineCount+1))
+    # get first word of line
+    cmd=$(echo "$line" | awk '{print $1}')
+    # check if first word of line (≈command) is valid
+    checkCmd $cmd
+    if [[ $? -eq 0 ]]
+    then
+    #   # save valid command to array
+    #   IFS=' ' read -r -a array <<< "$line"
+    #   # print array
+    #   for i in "${array[*]}"
+    #   do
+    #     echo $i
+    #   done
+    # printf "\n"
+      # save valid command to associative array.
+      assArray[$lineCount]="$line"
+      # echo $lineCount
+      # printf '%s\n' "${assArray[$lineCount]}"
+      ((lineCount=lineCount+1))
+    fi
   fi
-fi
 # input source
 done < "$input"
 

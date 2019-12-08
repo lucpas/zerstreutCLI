@@ -2,8 +2,13 @@
 
 # Helper functions
 createDatabase() {
-    echo "Creating DB"
-    $PATH_SQLBIN $PATH_DB "SELECT *"
+    echo "Creating DB..."
+    $PATH_SQLBIN $PATH_DB "
+    CREATE TABLE IF NOT EXISTS commands (
+        hash INTEGER PRIMARY KEY,
+        timestamp INTEGER,
+        command TEXT NOT NULL,
+        options TEXT)"
 }
 
 # Startup greeting
@@ -42,9 +47,12 @@ echo "                     %      &/   #,......,/ (.      *..,#(                
 echo "                     #       (   ,(......*/.*       .*#.(                       "
 echo "                     ------------------------------------                       "
 
+# Change to script directory
+cd $(dirname $0)
+
 # Detect OS
 case "$(uname -s)" in
-    Linux*)     OS=Lnx && PATH_SQLBIN="../sqlite/sqlite3-linux" && echo "Looks like you are∏ running Linux";;
+    Linux*)     OS=Lnx && PATH_SQLBIN="../sqlite/sqlite3-linux" && echo "Looks like you are running Linux";;
     Darwin*)    OS=Mac && PATH_SQLBIN="../sqlite/sqlite3-osx" && echo "Looks like you are running OSX";;
     CYGWIN*)    OS=Win && PATH_SQLBIN="../sqlite/sqlite3-win32" && echo "Looks like you are running Windows";;
     MINGW*)     OS=Win && PATH_SQLBIN="../sqlite/sqlite3-win32" && echo "Looks like you are running Windows";;
@@ -63,6 +71,5 @@ else
     createDatabase
 fi
 
-# Set up cronjob
-
-
+# Set up cronjob (TDB)
+# bash zerstreutWorker.sh $HISTFILE $PATH_SQLBIN $PATH_DB
