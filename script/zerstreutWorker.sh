@@ -23,6 +23,7 @@ function checkCmd(){
 }
 
 function queryDB(){
+  # Path to binary, path to database, query
   QUERY_RESULT=$($PATH_SQLBIN $PATH_DB $1)
 }
 
@@ -38,7 +39,7 @@ do
     cmd=$(echo "$line" | awk '{print $1}')
     options=$(echo "$line" | awk '{$1=""; print $0}')
 
-    # query DB to check if linehash is already present: 
+    # query DB to check if linehash is already present:
     queryDB "SELECT * FROM commands WHERE hash='$lineHash'"
     # if query output is empty, continue with the next loop iteration
     [[ ! -z "$QUERY_RESULT" ]] && continue
