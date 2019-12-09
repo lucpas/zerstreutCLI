@@ -10,7 +10,7 @@ PATH_DB=$3
 MD5BIN=$4
 
 echo "FILENAME: $0"
-echo "PATH_HISTFILE: $1"
+echo "PATH_HISTFILE: '$1'"
 echo "PATH_SQLBIN: $2"
 echo "PATH_DB: $3"
 echo "MD5BIN: $4"
@@ -25,6 +25,7 @@ function checkCmd(){
 function queryDB(){
   # Path to binary, path to database, query
   QUERY_RESULT=$($PATH_SQLBIN $PATH_DB $1)
+  #QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "SELECT * FROM commands WHERE hash='$lineHash'")
 }
 
 # while-loop through input file
@@ -40,15 +41,19 @@ do
     options=$(echo "$line" | awk '{$1=""; print $0}')
 
     # query DB to check if linehash is already present:
-    queryDB "SELECT * FROM commands WHERE hash='$lineHash'"
+    #queryDB "SELECT * FROM commands WHERE hash='$lineHash';"
+    QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "SELECT * FROM commands WHERE hash='$lineHash'")
     # if query output is empty, continue with the next loop iteration
     [[ ! -z "$QUERY_RESULT" ]] && continue
 
     # check if first word of line (≈command) is valid
     checkCmd $cmd
     if [[ $? -eq 0 ]]; then
-      queryDB "INSERT INTO commands(hash, command, options)
-        VALUES('$lineHash', '$cmd', '$options')"
+      echo "Hash: " $lineHash
+      echo "Command: " $cmd
+      echo "Options: " $options
+      #queryDB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')"   
+      QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')") 
 
     #   # save valid command to array
     #   IFS=' ' read -r -a array <<< "$line"

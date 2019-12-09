@@ -60,7 +60,8 @@ case "$(uname -s)" in
 esac
 
 # Finding bash history file
-PATH_HISTORY=$(echo $HISTFILE)
+#PATH_HISTORY=$(echo $HISTFILE)
+PATH_HISTORY=~/.bash_history
 
 # Try finding the DB within user dir, else create a new one
 PATH_DB="../zerstreutDB.sqlite"
@@ -70,5 +71,6 @@ else
     echo "No database found at $PATH_DB; creating new database..."
     createDatabase
 fi
+
 # Set up cronjob (TDB)
-bash zerstreutWorker.sh $PATH_HISTORY $PATH_SQLBIN $PATH_DB $MD5BIN
+bash zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN
