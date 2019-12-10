@@ -14,6 +14,7 @@ echo "PATH_HISTFILE: '$1'"
 echo "PATH_SQLBIN: $2"
 echo "PATH_DB: $3"
 echo "MD5BIN: $4"
+printf '\n'
 
 declare -a assArray
 declare -i lineCount=0
@@ -51,9 +52,10 @@ do
     if [[ $? -eq 0 ]]; then
       echo "Hash: " $lineHash
       echo "Command: " $cmd
-      echo "Options: " $options
-      #queryDB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')"   
-      QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')") 
+      echo "Options and Parameters: " $options
+      printf '\n'
+      #queryDB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')"
+      QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')")
 
     #   # save valid command to array
     #   IFS=' ' read -r -a array <<< "$line"
@@ -74,9 +76,9 @@ do
 done < "$PATH_HISTFILE"
 
 length=${#assArray[@]}
-echo $length
-echo First entry: ${assArray[0]}
-echo Last entry: ${assArray[(($length-1))]}
+echo "Amount of new entries added: "$length
+#echo First entry: ${assArray[0]}
+#echo Last entry: ${assArray[(($length-1))]}
 
 
 # # print associative array
