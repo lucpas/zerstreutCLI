@@ -34,19 +34,23 @@ function queryDB(){
 while IFS= read -r line
 do
 # check if start of cmdLine is valid.
-  if [[ $line =~ ^[a-z].* ]]
+  if [[ $line =~ ^[[:space:]]*[a-z].*$ ]]
   then
     # calculate line hash and extract data from line
+    # extract line hash
     lineHash=$(echo -n "$line" | $MD5BIN | awk '{print $1}')
+    # extract command
     cmd=$(echo "$line" | awk '{print $1}')
-    options=$(echo "$line" | awk '{$1=""; print $0}')
+    # extract options
+    options=$(echo "$line" | tr -d \' | awk '{$1=""; print $0}')
 
     # query DB to check if linehash is already present:
     #queryDB "SELECT * FROM commands WHERE hash='$lineHash';"
     QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "SELECT * FROM commands WHERE hash='$lineHash'")
-    # if query output is empty, continue with the next loop iteration
+    # if query output is not empty -> command + options already in database -> continue with the next loop iteration
     [[ ! -z "$QUERY_RESULT" ]] && continue
 
+    # query output ist empty -> new coms*[a-z].*mand + options
     # check if first word of line (≈command) is valid
     checkCmd $cmd
     if [[ $? -eq 0 ]]; then
@@ -65,6 +69,7 @@ do
     #     echo $i
     #   done
     # printf "\n"
+
       # save valid command to associative array.
       assArray[$lineCount]="$line"
       # echo $lineCount
