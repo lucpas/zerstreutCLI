@@ -60,7 +60,6 @@ case "$(uname -s)" in
 esac
 
 # Finding bash history file
-#PATH_HISTORY=$(echo $HISTFILE)
 PATH_HISTORY=~/.bash_history
 
 # Try finding the DB within user dir, else create a new one

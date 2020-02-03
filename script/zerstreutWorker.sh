@@ -45,7 +45,6 @@ do
     options=$(echo "$line" | tr -d \' | awk '{$1=""; print $0}')
 
     # query DB to check if linehash is already present:
-    #queryDB "SELECT * FROM commands WHERE hash='$lineHash';"
     QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "SELECT * FROM commands WHERE hash='$lineHash'")
     # if query output is not empty -> command + options already in database -> continue with the next loop iteration
     [[ ! -z "$QUERY_RESULT" ]] && continue
@@ -58,22 +57,11 @@ do
       echo "Command: " $cmd
       echo "Options and Parameters: " $options
       printf '\n'
-      #queryDB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')"
       QUERY_RESULT=$($PATH_SQLBIN $PATH_DB "INSERT INTO commands(hash, command, options) VALUES('$lineHash', '$cmd', '$options')")
-
-    #   # save valid command to array
-    #   IFS=' ' read -r -a array <<< "$line"
-    #   # print array
-    #   for i in "${array[*]}"
-    #   do
-    #     echo $i
-    #   done
-    # printf "\n"
 
       # save valid command to associative array.
       assArray[$lineCount]="$line"
-      # echo $lineCount
-      # printf '%s\n' "${assArray[$lineCount]}"
+
       ((lineCount=lineCount+1))
     fi
   fi
@@ -82,9 +70,6 @@ done < "$PATH_HISTFILE"
 
 length=${#assArray[@]}
 echo "Amount of new entries added: "$length
-#echo First entry: ${assArray[0]}
-#echo Last entry: ${assArray[(($length-1))]}
-
 
 # # print associative array
 # for key in "${assArray[@]}"
