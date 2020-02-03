@@ -8,7 +8,7 @@ createDatabase() {
         hash TEXT PRIMARY KEY,
         timestamp INTEGER,
         command TEXT NOT NULL,
-        options TEXT
+        options TEXT,
         tag TEXT UNIQUE
         )"
 }
