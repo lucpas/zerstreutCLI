@@ -8,7 +8,9 @@ createDatabase() {
         hash TEXT PRIMARY KEY,
         timestamp INTEGER,
         command TEXT NOT NULL,
-        options TEXT)"
+        options TEXT,
+        tag TEXT UNIQUE
+        )"
 }
 
 # Startup greeting
@@ -54,9 +56,9 @@ cd $(dirname $0)
 case "$(uname -s)" in
     Linux*)     OS=Lnx && MD5BIN=md5sum && PATH_SQLBIN="../sqlite/sqlite3-linux" && echo "Looks like you are running Linux";;
     Darwin*)    OS=Mac && MD5BIN=md5 && PATH_SQLBIN="../sqlite/sqlite3-osx" && echo "Looks like you are running OSX";;
-    CYGWIN*)    OS=Win && MD5BIN=md5sum && PATH_SQLBIN="../sqlite/sqlite3-win32" && echo "Looks like you are running Windows";;
-    MINGW*)     OS=Win && MD5BIN=md5sum && PATH_SQLBIN="../sqlite/sqlite3-win32" && echo "Looks like you are running Windows";;
-    *)          echo "Could not detect your type of operating system. Ex(c)iting..." && exit 3
+    CYGWIN*)    OS=Win && MD5BIN=md5sum && PATH_SQLBIN="../sqlite/sqlite3-win32.exe" && echo "Looks like you are running Windows";;
+    MINGW*)     OS=Win && MD5BIN=md5sum && PATH_SQLBIN="../sqlite/sqlite3-win32.exe" && echo "Looks like you are running Windows";;
+    *)          echo "Could not detect your type of operating system. Exiting..." && exit 3
 esac
 
 # Finding bash history file
@@ -71,5 +73,25 @@ else
     createDatabase
 fi
 
+# Export environment variables
+rm -f "../.config"
+echo $PWD >> "../.config"
+echo $PATH_HISTORY >> "../.config"
+echo $PATH_SQLBIN >> "../.config"
+echo $PATH_DB >> "../.config"
+
+# echo "bash $PWD/start.sh" >> ~/.bash_profile
+
 # Set up cronjob (TDB)
+case $OS in
+    Lnx) 
+    Mac)
+        crontab -l > mycrons
+        echo '*/5 * * * * bash $PWD/zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN' >> mycrons
+        crontab mycrons
+        rm mycrons
+        ;;
+    ?)
+
+# initial run
 bash zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN
