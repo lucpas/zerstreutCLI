@@ -4,3 +4,4 @@
 
 .config
 zerstreutDB.sqlite
+*.sqlite
