@@ -61,8 +61,10 @@ case "$(uname -s)" in
     *)          echo "Could not detect your type of operating system. Exiting..." && exit 3
 esac
 
-# Finding bash history file
+# Bash specific files
 PATH_HISTORY=~/.bash_history
+PATH_PROFILE=~/.bash_profile
+PATH_RC=~/.bashrc
 
 # Try finding the DB within user dir, else create a new one
 PATH_DB="../zerstreutDB.sqlite"
@@ -73,27 +75,49 @@ else
     createDatabase
 fi
 
-# Export environment variables
+# Create config
+echo "Creating config..."
 rm -f "../.config"
 echo $PWD >> "../.config"
 echo $PATH_HISTORY >> "../.config"
 echo $PATH_SQLBIN >> "../.config"
 echo $PATH_DB >> "../.config"
+echo $MD5BIN >> "../.config"
 
-# echo "bash $PWD/start.sh" >> ~/.bash_profile
+# Write call to worker script into bash profile
+echo "Writing call to worker script into bash profile..."
+awk '!/zerstreutWorker/' $PATH_PROFILE > temp && mv temp $PATH_PROFILE
+echo "bash $PWD/zerstreutWorker.sh" >> $PATH_PROFILE
 
-# Set up cronjob (TDB)
+# Add client to bashrc file
+echo "Writing 'zerstreut' as alias for client script into bash rc..."
+awk '!/zerstreutClient/' $PATH_RC > temp && mv temp $PATH_RC
+echo "alias zerstreut='$PWD/zerstreutClient.sh'" >> $PATH_RC
+
+# Set up cronjob
+echo "Setting up cronjob..."
 case $OS in
-    Lnx)
-    ;;
+    Lnx) ;;
     Mac)
+        # Store all cronjobs into temporary file
         crontab -l > mycrons
-        # echo '*/5 * * * * bash $PWD/zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN' >> mycrons
-        echo "*/1 * * * * bash $PWD/zerstreutWorker.sh $PATH_HISTORY $PATH_SQLBIN $PATH_DB $MD5BIN" >> mycrons
+        # Remove cronjob if it already exists
+        awk '!/zerstreutWorker/' mycrons > temp && mv temp mycrons
+        # Write new cronjob into temp file
+        echo "*/5 * * * * bash $PWD/zerstreutWorker.sh" >> mycrons
+        # Feed temp file into crontab
         crontab mycrons
+        # Remove temp file
         rm mycrons
         ;;
     ?)
 esac
+
+# Make worker and client executable
+echo "Making client and worker executable..."
+chmod u+x zerstreutClient.sh
+chmod u+x zerstreutWorker.sh
+
 # initial run
-bash zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN
+echo "Starting initial worker run..."
+bash zerstreutWorker.sh
