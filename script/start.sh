@@ -84,14 +84,16 @@ echo $PATH_DB >> "../.config"
 
 # Set up cronjob (TDB)
 case $OS in
-    Lnx) 
+    Lnx)
+    ;;
     Mac)
         crontab -l > mycrons
-        echo '*/5 * * * * bash $PWD/zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN' >> mycrons
+        # echo '*/5 * * * * bash $PWD/zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN' >> mycrons
+        echo "*/1 * * * * bash $PWD/zerstreutWorker.sh $PATH_HISTORY $PATH_SQLBIN $PATH_DB $MD5BIN" >> mycrons
         crontab mycrons
         rm mycrons
         ;;
     ?)
-
+esac
 # initial run
 bash zerstreutWorker.sh "$PATH_HISTORY" $PATH_SQLBIN $PATH_DB $MD5BIN
