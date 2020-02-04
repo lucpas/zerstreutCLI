@@ -5,8 +5,10 @@ abort() {
   exit 1
 }
 
+# Change to directory where this file is located
 cd $(dirname "$0")
 
+# Load config file
 CONFIG="../.config"
 if [ -f "$CONFIG" ]; then
   PATH_HISTFILE=$(awk 'NR==2 {print; exit}' $CONFIG)
