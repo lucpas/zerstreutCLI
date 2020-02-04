@@ -1,9 +1,0 @@
-git status
-cd /Users/leopoldwurm/Desktop/uni_msd_offline/3SEM/WebApp/Git/MSD3_WebApp
-touch index.html
-mkdir css
-mkdir js
-is a command
-#not a command
-  not a command
-is a second command

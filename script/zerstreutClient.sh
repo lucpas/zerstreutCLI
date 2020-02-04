@@ -1,22 +1,21 @@
 #!/bin/bash
 
-CONFIG=".config"
-
 abort() {
   echo $@
   exit 1
 }
 
+cd $(dirname "$0")
+
+CONFIG="../.config"
 if [ -f "$CONFIG" ]; then
-  PWD=$(awk 'NR==1 {print; exit}' $CONFIG)
-  PATH_HISTORY=$(awk 'NR==2 {print; exit}' $CONFIG)
+  # PWD=$(awk 'NR==1 {print; exit}' $CONFIG)
   PATH_SQLBIN=$(awk 'NR==3 {print; exit}' $CONFIG)
   PATH_DB=$(awk 'NR==4 {print; exit}' $CONFIG)
+  # cd $PWD
 else
-  abort "Config file not found. Try running start.sh"
+  abort "Config file not found. Try running install.sh"
 fi
-
-cd $PWD
 
 while getopts 't:c:o:' OPTION; do
   case "$OPTION" in
@@ -36,7 +35,6 @@ while getopts 't:c:o:' OPTION; do
 done
 shift "$(($OPTIND - 1))"
 
-#echo "-t" $TAG "-c" $COMMAND "-o" $OPTIONS
 
 if [[ $TAG && $COMMAND ]] || [[ $TAG && $OPTIONS ]] || [[ $OPTIONS && $COMMAND ]]; then
   abort "Specify EITHER a tag, a command or an option to search"
@@ -45,16 +43,14 @@ fi
 if [ $TAG ]; then
   echo "Stored commands using tag '$TAG':"
   SOURCE="commands WHERE tag='$TAG'"
-fi
-
-if [ $COMMAND ]; then
+elif [ $COMMAND ]; then
   echo "Stored commands using command '$COMMAND':"
   SOURCE="commands WHERE command='$COMMAND'"
-fi
-
-if [ $OPTIONS ]; then
+elif [ $OPTIONS ]; then
   echo "Stored commands containing options '$OPTIONS':"
   SOURCE="commands WHERE options LIKE '%$OPTIONS%'"
+else
+  abort "Specify a tag, a command or an option"
 fi
 
 IFS=$'\n'

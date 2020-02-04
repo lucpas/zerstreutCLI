@@ -1,19 +1,37 @@
 #!/bin/bash
 
-# change to script directory
-cd $(dirname $0)
+abort() {
+  echo $@
+  exit 1
+}
 
-# relabel parameters
-PATH_HISTFILE=$1
-PATH_SQLBIN=$2
-PATH_DB=$3
-MD5BIN=$4
+cd $(dirname "$0")
 
-echo "FILENAME: $0"
-echo "PATH_HISTFILE: '$1'"
-echo "PATH_SQLBIN: $2"
-echo "PATH_DB: $3"
-echo "MD5BIN: $4"
+CONFIG="../.config"
+if [ -f "$CONFIG" ]; then
+  PATH_HISTFILE=$(awk 'NR==2 {print; exit}' $CONFIG)
+  PATH_SQLBIN=$(awk 'NR==3 {print; exit}' $CONFIG)
+  PATH_DB=$(awk 'NR==4 {print; exit}' $CONFIG)
+  MD5BIN=$(awk 'NR==5 {print; exit}' $CONFIG)
+else
+  abort "Config file not found. Try running install.sh"
+fi
+
+# # change to script directory
+# cd $(dirname $0)
+
+# # relabel parameters
+# PATH_HISTFILE=$1
+# PATH_SQLBIN=$2
+# PATH_DB=$3
+# MD5BIN=$4
+
+echo "zerstreutWorker.sh"
+echo "FILENAME:      $0"    
+echo "PATH_HISTFILE: $PATH_HISTFILE"
+echo "PATH_SQLBIN:   $PATH_SQLBIN"
+echo "PATH_DB:       $PATH_DB"
+echo "MD5BIN:        $MD5BIN"
 printf '\n'
 
 declare -a assArray
